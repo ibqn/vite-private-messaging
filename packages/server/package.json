@@ -1,0 +1,16 @@
+{
+  "name": "vite-private-messaging",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite-node src/main.ts",
+    "build": "vue-tsc -b && vite build"
+  },
+  "dependencies": {
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "vite-node": "^2.1.1"
+  }
+}
