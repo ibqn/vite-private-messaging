@@ -15,4 +15,6 @@ export interface SocketData {
 export type User = {
   userID: string
   username: string
+  self?: boolean
+  connected?: boolean
 }
