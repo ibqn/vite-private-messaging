@@ -10,7 +10,7 @@ const props = defineProps<Props>()
 
 <template>
   <i
-    class="mr-1.5 size-2 rounded-full bg-[#e38968]"
-    :class="cn(props.connected && 'bg-[#86bb71]')"
+    class="flex size-2 rounded-full"
+    :class="cn(props.connected ? 'bg-[#86bb71]' : 'bg-[#e38968]')"
   ></i>
 </template>
