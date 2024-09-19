@@ -1,19 +1,18 @@
 export interface ServerToClientEvents {
+  users: (users: User[]) => void
 }
 
 export interface ClientToServerEvents {
-  hello: () => void;
+  hello: () => void
 }
 
-export interface InterServerEvents {
-}
+export interface InterServerEvents {}
 
 export interface SocketData {
-  username: string;
+  username: string
 }
 
-
 export type User = {
-  userID: string;
-  username: string;
+  userID: string
+  username: string
 }
