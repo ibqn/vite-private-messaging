@@ -1,4 +1,5 @@
 {
+  "name": "vite-private-messaging",
   "license": "UNLICENSED",
   "private": true,
   "version": "0.0.0",
