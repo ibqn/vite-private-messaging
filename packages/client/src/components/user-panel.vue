@@ -29,11 +29,22 @@ const onSelectUser = () => emit("select")
     @click="onSelectUser"
     :class="cn(selected && 'bg-[#1164a3]')"
   >
-    <div class="flex flex-col">
-      <div>{{ props.user.username }} {{ props.user.self ? "(you)" : "" }}</div>
-      <div class="flex flex-row items-baseline gap-1.5 text-[#92959e]">
-        <StatusIcon :connected="props.user.connected" />
-        {{ status }}
+    <div class="flex flex-row items-baseline justify-between">
+      <div class="flex flex-col">
+        <div>
+          {{ props.user.username }} {{ props.user.self ? "(you)" : "" }}
+        </div>
+        <div class="flex flex-row items-baseline gap-1.5 text-[#92959e]">
+          <StatusIcon :connected="props.user.connected" />
+          {{ status }}
+        </div>
+      </div>
+
+      <div
+        v-if="props.user.hasNewMessages"
+        class="flex size-5 items-center justify-center rounded-full bg-[#d9290a] text-white"
+      >
+        !
       </div>
     </div>
   </div>
