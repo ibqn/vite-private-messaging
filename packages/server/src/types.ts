@@ -1,7 +1,7 @@
 export interface ServerToClientEvents {
   users: (users: User[]) => void
   "user connected": (user: User) => void
-  "user disconnected": (userID: string) => void
+  "user disconnected": (userId: string) => void
 }
 
 export interface ClientToServerEvents {
@@ -15,7 +15,7 @@ export interface SocketData {
 }
 
 export type User = {
-  userID: string
+  userId: string
   username: string
   self?: boolean
   connected?: boolean

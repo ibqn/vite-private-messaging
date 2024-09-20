@@ -29,7 +29,7 @@ onMounted(() => {
 
   socket.on("users", (incomingUsers: User[]) => {
     incomingUsers.forEach((user) => {
-      user.self = user.userID === socket.id
+      user.self = user.userId === socket.id
       initReactiveProperties(user)
     })
 
@@ -52,18 +52,18 @@ onMounted(() => {
     users.value.push(incomingUser)
   })
 
-  socket.on("user disconnected", (userID: string) => {
-    const user = users.value.find((user) => user.userID === userID)
+  socket.on("user disconnected", (userId: string) => {
+    const user = users.value.find((user) => user.userId === userId)
     if (user) {
       user.connected = false
     }
   })
 
   socket.on("private message", ({ content, from }) => {
-    const user = users.value.find((user) => user.userID === from)
+    const user = users.value.find((user) => user.userId === from)
     if (user) {
       user.messages = [...(user.messages ?? []), { content, fromSelf: false }]
-      if (user.userID !== selectedUser.value?.userID) {
+      if (user.userId !== selectedUser.value?.userId) {
         user.hasNewMessages = true
       }
     }
@@ -89,7 +89,7 @@ const onMessage = (content: string) => {
     return
   }
 
-  socket.emit("private message", { to: selectedUser.value?.userID, content })
+  socket.emit("private message", { to: selectedUser.value?.userId, content })
   selectedUser.value.messages = [
     ...(selectedUser.value?.messages ?? []),
     { content, fromSelf: true },
@@ -102,10 +102,10 @@ const onMessage = (content: string) => {
     <div class="w-64 bg-[#3f0e40] text-white">
       <UserPanel
         v-for="user in users"
-        :key="user.userID"
+        :key="user.userId"
         :user="user"
         @select="onSelectUser(user)"
-        :selected="selectedUser?.userID === user.userID"
+        :selected="selectedUser?.userId === user.userId"
       />
     </div>
     <MessagePanel v-if="selectedUser" @input="onMessage" :user="selectedUser" />

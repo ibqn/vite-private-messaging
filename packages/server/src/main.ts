@@ -34,7 +34,7 @@ io.on("connection", (socket: Socket) => {
   const users: User[] = []
   for (const [id, socket] of io.of("/").sockets) {
     users.push({
-      userID: id,
+      userId: id,
       username: socket.data.username,
     })
   }
@@ -42,7 +42,7 @@ io.on("connection", (socket: Socket) => {
 
   // notify existing users
   socket.broadcast.emit("user connected", {
-    userID: socket.id,
+    userId: socket.id,
     username: socket.data.username,
   })
 
