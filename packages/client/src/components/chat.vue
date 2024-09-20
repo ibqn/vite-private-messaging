@@ -3,6 +3,7 @@ import { socket } from "@/socket"
 import type { User } from "server/src/types"
 import { onMounted, onUnmounted, ref } from "vue"
 import UserPanel from "@/components/user-panel.vue"
+import MessagePanel from "./message-panel.vue"
 
 const users = ref<User[]>([])
 const selectedUser = ref<User | null>(null)
@@ -67,6 +68,10 @@ onUnmounted(() => {
   socket.off("user disconnected")
   socket.off("private message")
 })
+
+const onSelectUser = (user: User) => {
+  selectedUser.value = user
+}
 </script>
 
 <template>
@@ -76,9 +81,12 @@ onUnmounted(() => {
         v-for="user in users"
         :key="user.userID"
         :user="user"
+        @select="onSelectUser(user)"
         :selected="selectedUser?.userID === user.userID"
       />
     </div>
-    <div class="flex-1">chat</div>
+    <div class="flex-1">
+      <MessagePanel v-if="selectedUser" :user="selectedUser" />
+    </div>
   </div>
 </template>
