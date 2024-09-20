@@ -20,9 +20,10 @@ export type User = {
   self?: boolean
   connected?: boolean
   messages?: Message[]
+  hasNewMessages?: boolean
 }
 
 export type Message = {
   content: string
-  from: string
+  fromSelf?: boolean
 }
