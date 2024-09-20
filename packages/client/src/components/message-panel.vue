@@ -56,6 +56,7 @@ const onSubmit = () => {
 
     <form class="flex flex-row gap-2" @submit.prevent="onSubmit">
       <textarea
+        v-on:keyup.enter="onSubmit"
         class="flex-1 resize-none border border-[#dddddd] p-2 leading-normal"
         placeholder="your message..."
         v-model="input"
