@@ -3,7 +3,7 @@ import { socket } from "@/socket"
 import type { User } from "server/src/types"
 import { onMounted, onUnmounted, ref } from "vue"
 import UserPanel from "@/components/user-panel.vue"
-import MessagePanel from "./message-panel.vue"
+import MessagePanel from "@/components/message-panel.vue"
 
 const users = ref<User[]>([])
 const selectedUser = ref<User | null>(null)
@@ -58,6 +58,16 @@ onMounted(() => {
       user.connected = false
     }
   })
+
+  socket.on("private message", ({ content, from }) => {
+    const user = users.value.find((user) => user.userID === from)
+    if (user) {
+      user.messages = [...(user.messages ?? []), { content, fromSelf: false }]
+      if (user.userID !== selectedUser.value?.userID) {
+        user.hasNewMessages = true
+      }
+    }
+  })
 })
 
 onUnmounted(() => {
@@ -71,6 +81,19 @@ onUnmounted(() => {
 
 const onSelectUser = (user: User) => {
   selectedUser.value = user
+  user.hasNewMessages = false
+}
+
+const onMessage = (content: string) => {
+  if (!selectedUser.value) {
+    return
+  }
+
+  socket.emit("private message", { to: selectedUser.value?.userID, content })
+  selectedUser.value.messages = [
+    ...(selectedUser.value?.messages ?? []),
+    { content, fromSelf: true },
+  ]
 }
 </script>
 
@@ -85,8 +108,6 @@ const onSelectUser = (user: User) => {
         :selected="selectedUser?.userID === user.userID"
       />
     </div>
-    <div class="flex-1">
-      <MessagePanel v-if="selectedUser" :user="selectedUser" />
-    </div>
+    <MessagePanel v-if="selectedUser" @input="onMessage" :user="selectedUser" />
   </div>
 </template>
