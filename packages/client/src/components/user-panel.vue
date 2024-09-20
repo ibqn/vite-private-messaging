@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { User } from "server/src/types"
 import { computed } from "vue"
-import StatusIcon from "./status-icon.vue"
+import StatusIcon from "@/components/status-icon.vue"
 import { cn } from "@/utils/class-names"
 
 type Props = {
@@ -25,14 +25,14 @@ const onSelectUser = () => emit("select")
 
 <template>
   <div
-    class="p-2.5"
+    class="cursor-pointer p-2.5"
     @click="onSelectUser"
     :class="cn(selected && 'bg-[#1164a3]')"
   >
     <div class="flex flex-col">
       <div>{{ props.user.username }} {{ props.user.self ? "(you)" : "" }}</div>
       <div class="flex flex-row items-baseline gap-1.5 text-[#92959e]">
-        <StatusIcon :connected="props.user.connected ?? false" />
+        <StatusIcon :connected="props.user.connected" />
         {{ status }}
       </div>
     </div>
