@@ -27,3 +27,8 @@ export type Message = {
   content: string
   fromSelf?: boolean
 }
+
+export type Session = {
+  id: string
+  userId: string
+}
