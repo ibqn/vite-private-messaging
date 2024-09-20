@@ -28,7 +28,7 @@ const isValid = computed(() => input.value.trim().length > 0)
 
 const onSubmit = () => {
   if (isValid.value) {
-    emit("input", input.value)
+    emit("input", input.value.trim())
     input.value = ""
   }
 }
@@ -63,7 +63,7 @@ const onSubmit = () => {
       ></textarea>
       <button
         :disabled="!isValid"
-        class="border border-[#dddddd] p-2 px-4 capitalize disabled:opacity-50"
+        class="border border-[#dddddd] bg-slate-400 p-2 px-4 capitalize text-white disabled:opacity-50"
       >
         send
       </button>
