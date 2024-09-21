@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue"
-import SelectUsername from "./components/select-username.vue"
-import { socket } from "./socket"
-import Chat from "./components/chat.vue"
+import SelectUsername from "@/components/select-username.vue"
+import { socket } from "@/socket"
+import Chat from "@/components/chat.vue"
 
 const isUsernameSelected = ref(false)
 
