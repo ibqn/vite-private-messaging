@@ -14,6 +14,20 @@ const onUsernameInput = (username: string) => {
 }
 
 onMounted(() => {
+  const sessionId = localStorage.getItem("sessionId")
+  if (sessionId) {
+    isUsernameSelected.value = true
+    socket.auth = { sessionId }
+    socket.connect()
+  }
+
+  socket.on("session", ({ sessionId, userId }) => {
+    // attach the session ID to the next reconnection attempts
+    socket.auth = { sessionId }
+    localStorage.setItem("sessionId", sessionId)
+    socket.userId = userId
+  })
+
   socket.on("connect_error", (error) => {
     if (error.message === "invalid username") {
       isUsernameSelected.value = false
@@ -23,6 +37,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   socket.off("connect_error")
+  socket.off("session")
 })
 </script>
 

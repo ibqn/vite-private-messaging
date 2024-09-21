@@ -27,9 +27,15 @@ onMounted(() => {
     })
   })
 
+  const initReactiveProperties = (user: User) => {
+    user.self = user.userId === socket.userId
+    user.hasNewMessages = false
+    user.connected = true
+  }
+
   socket.on("users", (incomingUsers: User[]) => {
     incomingUsers.forEach((user) => {
-      user.self = user.userId === socket.id
+      user.self = user.userId === socket.userId
       initReactiveProperties(user)
     })
 
@@ -43,11 +49,12 @@ onMounted(() => {
     users.value = incomingUsers
   })
 
-  const initReactiveProperties = (user: User) => {
-    user.connected = true
-  }
-
   socket.on("user connected", (incomingUser: User) => {
+    const user = users.value.find((user) => user.userId === incomingUser.userId)
+    if (user) {
+      user.connected = true
+      return
+    }
     initReactiveProperties(incomingUser)
     users.value.push(incomingUser)
   })
@@ -59,10 +66,13 @@ onMounted(() => {
     }
   })
 
-  socket.on("private message", ({ content, from }) => {
-    const user = users.value.find((user) => user.userId === from)
+  socket.on("private message", ({ content, from, to }) => {
+    const fromSelf = socket.userId === from
+    const user = users.value.find(
+      (user) => user.userId === (fromSelf ? to : from)
+    )
     if (user) {
-      user.messages = [...(user.messages ?? []), { content, fromSelf: false }]
+      user.messages = [...(user.messages ?? []), { content, fromSelf }]
       if (user.userId !== selectedUser.value?.userId) {
         user.hasNewMessages = true
       }
