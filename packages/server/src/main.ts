@@ -93,8 +93,20 @@ io.on("connection", async (socket: Socket) => {
   })
 
   // notify users upon disconnection
-  socket.on("disconnect", () => {
-    socket.broadcast.emit("user disconnected", socket.id)
+  socket.on("disconnect", async () => {
+    const matchingSockets = await io.in(socket.data.userID).fetchSockets()
+    const isDisconnected = matchingSockets.length === 0
+    if (isDisconnected) {
+      // notify other users
+      socket.broadcast.emit("user disconnected", socket.data.userId)
+      // update the connection status of the session
+      await sessionStore.saveSession({
+        id: socket.data.sessionId,
+        userId: socket.data.userId,
+        username: socket.data.username,
+        connected: false,
+      })
+    }
   })
 })
 
