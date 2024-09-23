@@ -34,6 +34,8 @@ export type User = {
 export type Message = {
   content: string
   fromSelf?: boolean
+  to?: string
+  from?: string
 }
 
 export type Session = {

@@ -71,6 +71,7 @@ onMounted(() => {
     const user = users.value.find(
       (user) => user.userId === (fromSelf ? to : from)
     )
+
     if (user) {
       user.messages = [...(user.messages ?? []), { content, fromSelf }]
       if (user.userId !== selectedUser.value?.userId) {

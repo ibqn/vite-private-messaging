@@ -9,6 +9,7 @@ import {
 } from "./types"
 import { InMemorySessionStore } from "./session-store/in-memory-session-store"
 import { randomId } from "./utils/random-id"
+import { InMemoryMessageStore } from "./message-store/in-memory-message-store"
 
 const httpServer = createServer()
 const io = new Server<
@@ -23,6 +24,7 @@ const io = new Server<
 })
 
 const sessionStore = new InMemorySessionStore()
+const messageStore = new InMemoryMessageStore()
 
 io.use(async (socket, next) => {
   const sessionId = socket.handshake.auth.sessionId
@@ -64,14 +66,36 @@ io.on("connection", async (socket: Socket) => {
   // join the userId room
   socket.join(socket.data.userId)
 
+  // get the messages for the socket user
+  const allMessages = await messageStore.getMessagesByUserId(socket.data.userId)
   // fetch existing users
   const users: User[] = []
   const sessions = await sessionStore.getAllSessions()
   sessions.forEach((session) => {
+    const messages = allMessages
+      .filter((message) => {
+        if (socket.data.userId === session.userId) {
+          return (
+            message.from === session.userId && message.to === session.userId
+          )
+        } else {
+          return (
+            (message.to === session.userId ||
+              message.from === session.userId) &&
+            message.from !== message.to
+          )
+        }
+      })
+      .map((message) => ({
+        ...message,
+        fromSelf: message.from === socket.data.userId,
+      }))
+
     users.push({
       userId: session.userId,
       username: session.username,
       connected: session.connected,
+      messages,
     })
   })
   socket.emit("users", users)
@@ -84,17 +108,19 @@ io.on("connection", async (socket: Socket) => {
   })
 
   // forward the private message to the right recipient
-  socket.on("private message", ({ content, to }) => {
-    socket.to(to).to(socket.data.userId).emit("private message", {
+  socket.on("private message", async ({ content, to }) => {
+    const message = {
       content,
       from: socket.data.userId,
       to,
-    })
+    }
+    socket.to(to).to(socket.data.userId).emit("private message", message)
+    await messageStore.saveMessage(message)
   })
 
   // notify users upon disconnection
   socket.on("disconnect", async () => {
-    const matchingSockets = await io.in(socket.data.userID).fetchSockets()
+    const matchingSockets = await io.in(socket.data.userId).fetchSockets()
     const isDisconnected = matchingSockets.length === 0
     if (isDisconnected) {
       // notify other users
