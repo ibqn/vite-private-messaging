@@ -30,7 +30,6 @@ onMounted(() => {
   const initReactiveProperties = (user: User) => {
     user.self = user.userId === socket.userId
     user.hasNewMessages = false
-    user.connected = true
   }
 
   socket.on("users", (incomingUsers: User[]) => {
