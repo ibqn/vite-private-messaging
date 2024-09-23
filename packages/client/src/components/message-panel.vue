@@ -47,7 +47,7 @@ const onSubmit = () => {
       <ul v-if="user.messages" class="p-5">
         <li v-for="(message, index) in user.messages" :key="index">
           <div v-if="displaySender(index)" class="mt-1.5 font-semibold">
-            {{ user.username }}
+            {{ message.fromSelf ? "(yourself)" : user.username }}
           </div>
           {{ message.content }}
         </li>
