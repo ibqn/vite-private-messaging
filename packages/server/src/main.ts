@@ -32,7 +32,7 @@ io.use(async (socket, next) => {
   const sessionId = socket.handshake.auth.sessionId
 
   if (sessionId) {
-    const session = await sessionStore.finsSessionById(sessionId)
+    const session = await sessionStore.findSessionById(sessionId)
     if (session) {
       socket.data.sessionId = sessionId
       socket.data.userId = session.userId

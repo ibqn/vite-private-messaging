@@ -4,7 +4,7 @@ import { SessionStore } from "./session-store"
 export class InMemorySessionStore extends SessionStore {
   private sessions = new Map<string, Session>()
 
-  async finsSessionById(id: string): Promise<Session | null> {
+  async findSessionById(id: string): Promise<Session | null> {
     return this.sessions.get(id) ?? null
   }
 
