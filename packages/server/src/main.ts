@@ -1,8 +1,9 @@
 import { createServer } from "http"
 import { Server, Socket } from "socket.io"
-import {
+import type {
   ClientToServerEvents,
   InterServerEvents,
+  Message,
   ServerToClientEvents,
   SocketData,
   User,
@@ -10,6 +11,7 @@ import {
 import { InMemorySessionStore } from "./session-store/in-memory-session-store"
 import { randomId } from "./utils/random-id"
 import { InMemoryMessageStore } from "./message-store/in-memory-message-store"
+import assert from "assert"
 
 const httpServer = createServer()
 const io = new Server<
@@ -68,34 +70,30 @@ io.on("connection", async (socket: Socket) => {
 
   // get the messages for the socket user
   const allMessages = await messageStore.getMessagesByUserId(socket.data.userId)
+  const messagesByUserId = new Map<string, Message[]>()
+  allMessages
+    .map((message) => ({
+      ...message,
+      fromSelf: message.from === socket.data.userId,
+    }))
+    .forEach((message) => {
+      const { from, to, fromSelf } = message
+      const otherUserId = fromSelf ? to : from
+      assert(otherUserId, "otherUserId is required")
+      messagesByUserId.set(otherUserId, [
+        ...(messagesByUserId.get(otherUserId) ?? []),
+        message,
+      ])
+    })
   // fetch existing users
   const users: User[] = []
   const sessions = await sessionStore.getAllSessions()
   sessions.forEach((session) => {
-    const messages = allMessages
-      .filter((message) => {
-        if (socket.data.userId === session.userId) {
-          return (
-            message.from === session.userId && message.to === session.userId
-          )
-        } else {
-          return (
-            (message.to === session.userId ||
-              message.from === session.userId) &&
-            message.from !== message.to
-          )
-        }
-      })
-      .map((message) => ({
-        ...message,
-        fromSelf: message.from === socket.data.userId,
-      }))
-
     users.push({
       userId: session.userId,
       username: session.username,
       connected: session.connected,
-      messages,
+      messages: messagesByUserId.get(session.userId),
     })
   })
   socket.emit("users", users)
