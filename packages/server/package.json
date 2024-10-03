@@ -8,9 +8,9 @@
     "build": "vue-tsc -b && vite build"
   },
   "dependencies": {
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.8.0"
   },
   "devDependencies": {
-    "vite-node": "^2.1.1"
+    "vite-node": "^2.1.2"
   }
 }
