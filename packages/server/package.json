@@ -4,13 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite-node --watch src/main.ts",
-    "build": "vue-tsc -b && vite build"
+    "dev": "tsx watch src/main.ts"
   },
   "dependencies": {
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
-    "vite-node": "^2.1.8"
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }
