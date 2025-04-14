@@ -13,6 +13,8 @@ import { randomId } from "./utils/random-id"
 import { InMemoryMessageStore } from "./message-store/in-memory-message-store"
 import assert from "assert"
 
+const allowedOrigin = process.env.ALLOWED_ORIGIN ?? "http://localhost:5173"
+
 const httpServer = createServer()
 const io = new Server<
   ClientToServerEvents,
@@ -21,7 +23,7 @@ const io = new Server<
   SocketData
 >(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: [allowedOrigin],
   },
 })
 
